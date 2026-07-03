@@ -187,48 +187,43 @@ export default function Admin() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-    setSaving(true);
-    try {
-      const payload = {
-        ...form,
-        capacity: Number(form.capacity),
-        price_per_day: Number(form.price_per_day),
-        rating: form.rating === "" ? 0 : Number(form.rating),
-      };
-      if (editingId) {
-        await updateRoom(editingId, payload);
-        setMessage("Ruang berhasil diperbarui.");
-      } else {
-        const newRoom = await createRoom(payload);
-        if (stagedFiles.length > 0) {
-          try {
-            await uploadRoomImages(
-              newRoom.id,
-              stagedFiles.map((f) => f.file),
-            );
-          } catch (uploadErr) {
-            setMessage(
-              "Ruang berhasil ditambahkan, tapi upload foto gagal. Coba upload lagi lewat Edit.",
-            );
-            resetForm();
-            load();
-            setSaving(false);
-            return;
-          }
-        }
-        setMessage("Ruang berhasil ditambahkan.");
+  e.preventDefault();
+  setError("");
+  setMessage("");
+  setSaving(true);
+  try {
+    const payload = {
+      ...form,
+      capacity: Number(form.capacity),
+      price_per_day: Number(form.price_per_day),
+      rating: form.rating === "" ? 0 : Number(form.rating),
+    };
+
+    if (editingId) {
+      // 1. Update data text room
+      await updateRoom(editingId, payload);[cite: 1]
+
+      // 2. Jika ada foto baru di-stage, upload sekarang
+      if (stagedFiles.length > 0) {
+        await uploadRoomImages(editingId, stagedFiles.map((f) => f.file));
       }
-      resetForm();
-      load();
-    } catch (err) {
-      setError(err.response?.data?.message || "Gagal menyimpan ruang.");
-    } finally {
-      setSaving(false);
+      setMessage("Ruang dan foto berhasil diperbarui.");
+    } else {
+      // Logika untuk tambah ruangan baru (tetap sama)
+      const newRoom = await createRoom(payload);[cite: 1]
+      if (stagedFiles.length > 0) {
+        await uploadRoomImages(newRoom.id, stagedFiles.map((f) => f.file));[cite: 1]
+      }
+      setMessage("Ruang berhasil ditambahkan.");[cite: 1]
     }
+    resetForm();[cite: 1]
+    load();[cite: 1]
+  } catch (err) {
+    setError(err.response?.data?.message || "Gagal menyimpan ruang.");[cite: 1]
+  } finally {
+    setSaving(false);[cite: 1]
   }
+}
 
   async function handleToggleActive(room) {
     try {
@@ -246,15 +241,13 @@ export default function Admin() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    if (editingId) {
-      uploadToRoom(editingId, files);
-    } else {
-      const newStaged = Array.from(files).map((file) => ({
-        file,
-        previewUrl: URL.createObjectURL(file),
-      }));
-      setStagedFiles((prev) => [...prev, ...newStaged]);
-    }
+    // Satukan logika: kumpulkan semua file ke staging terlebih dahulu
+    const newStaged = Array.from(files).map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setStagedFiles((prev) => [...prev, ...newStaged]);
+
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
