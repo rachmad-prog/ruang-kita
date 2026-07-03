@@ -7,7 +7,7 @@ import {
   uploadRoomImages,
   deleteRoomImage,
 } from "../api/rooms";
-import { resolveImageUrl } from "../utils/media";
+import { resolveImageUrl } from "../utils/mdia";
 import {
   fetchProvinces,
   fetchRegencies,
