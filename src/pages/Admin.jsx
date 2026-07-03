@@ -3,6 +3,7 @@ import {
   getRooms,
   createRoom,
   updateRoom,
+  deleteRoom,
   uploadRoomImages,
   deleteRoomImage,
 } from "../api/rooms";
@@ -231,6 +232,20 @@ export default function Admin() {
       load();
     } catch (err) {
       alert("Gagal mengubah status ruang.");
+    }
+  }
+
+  async function handleDelete(room) {
+    const confirmed = window.confirm(
+      `Hapus permanen ruang "${room.name}"? Semua foto ruang ini juga akan ikut terhapus. Tindakan ini tidak bisa dibatalkan.`,
+    );
+    if (!confirmed) return;
+    try {
+      await deleteRoom(room.id);
+      if (editingId === room.id) resetForm();
+      load();
+    } catch (err) {
+      alert(err.response?.data?.message || "Gagal menghapus ruang.");
     }
   }
 
@@ -544,11 +559,6 @@ export default function Admin() {
                   </span>
                 </td>
                 <td className="actions">
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => startEdit(room)}>
-                    Edit
-                  </button>
                   <label
                     className="toggle-active"
                     title={
@@ -561,6 +571,16 @@ export default function Admin() {
                     />
                     Aktif
                   </label>
+                  <button
+                    className="btn btn-outline btn-sm"
+                    onClick={() => startEdit(room)}>
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(room)}>
+                    Hapus
+                  </button>
                 </td>
               </tr>
             ))}
