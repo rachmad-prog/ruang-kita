@@ -559,6 +559,18 @@ export default function Admin() {
                   </span>
                 </td>
                 <td className="actions">
+                  <div className="actions-buttons">
+                    <button
+                      className="btn btn-outline btn-sm"
+                      onClick={() => startEdit(room)}>
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(room)}>
+                      Hapus
+                    </button>
+                  </div>
                   <label
                     className="toggle-active"
                     title={
@@ -571,16 +583,6 @@ export default function Admin() {
                     />
                     Aktif
                   </label>
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => startEdit(room)}>
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleDelete(room)}>
-                    Hapus
-                  </button>
                 </td>
               </tr>
             ))}
